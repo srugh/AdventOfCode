@@ -1,0 +1,10 @@
+# Ignore editor-specific files
+.vscode/
+
+# Ignore Mac OS X files
+.DS_Store
+
+# Ignore input files, temp files, really any txt file or test garbage
+*/Inputs/*
+*.txt
+*test*
