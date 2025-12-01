@@ -19,10 +19,10 @@ def solve_part_1(moves)
   zeros
 end
 
-def solve_part_2(inputs)
+def solve_part_2(moves)
   zeros, pos, max_pos = 0, 50, 100
 
-  inputs.each do |dir, clicks|
+  moves.each do |dir, clicks|
     if dir == "R"
       zeros += (pos + clicks) / max_pos
       pos = (pos + clicks) % max_pos
