@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'tempfile'
 
 def parse_input(path)
@@ -7,20 +9,19 @@ def parse_input(path)
     parts = line.split
     pattern = parts.shift[1...-1].gsub(/[#.]/, replacements)
     power = parts.pop
-    buttons = []
-    
-    parts.each do |b|
-      buttons.push(b[1...-1].split(',').map(&:to_i))
+
+    buttons = parts.map do |b|
+      b[1...-1].split(',').map(&:to_i)
     end
-  
-    input.push([pattern, buttons, power[1...-1].split(",").map(&:to_i)])
+
+    input.push([pattern, buttons, power[1...-1].split(',').map(&:to_i)])
   end
   input
 end
 
 def min_presses_for_machine(pattern, buttons)
   pattern_length = pattern.length
-  target = 0  
+  target = 0
   pattern.chars.each_with_index do |ch, i|
     target |= (1 << i) if ch == '1'
   end
@@ -59,8 +60,8 @@ end
 def build_lp_for_machine(buttons, targets)
   b = buttons.length
 
-  objective_terms = (0...b).map { |j| "x#{j}" }.join(" + ")
-  lp = +"min: #{objective_terms};\n"
+  objective_terms = (0...b).map { |j| "x#{j}" }.join(' + ')
+  lp = "min: #{objective_terms};\n"
 
   constraints = []
   targets.each_with_index do |t, i|
@@ -74,7 +75,7 @@ def build_lp_for_machine(buttons, targets)
 
   lp << constraints.join("\n") << "\n" unless constraints.empty?
 
-  int_line = "int " + (0...b).map { |j| "x#{j}" }.join(", ") + ";"
+  int_line = 'int ' + (0...b).map { |j| "x#{j}" }.join(', ') + ';'
   lp << int_line << "\n"
 
   lp
@@ -83,30 +84,27 @@ end
 def min_presses_for_jolts(buttons, targets)
   lp_text = build_lp_for_machine(buttons, targets)
 
-  Tempfile.create(["machine", ".lp"]) do |f|
+  Tempfile.create(['machine', '.lp']) do |f|
     f.write(lp_text)
     f.flush
 
     output = `lp_solve #{f.path} 2>/dev/null`
-    
-    if output =~ /Value of objective function:\s*([0-9]+)/i
-      return $1.to_i
-    end
+
+    return Regexp.last_match(1).to_i if output =~ /Value of objective function:\s*([0-9]+)/i
   end
 end
 
-
-def solve_part_1(machines)
+def solve_part1(machines)
   machines.sum { |pattern, buttons, _| min_presses_for_machine(pattern, buttons) }
 end
 
-def solve_part_2(machines)
+def solve_part2(machines)
   machines.sum do |_pattern, buttons, jolts|
     min_presses_for_jolts(buttons, jolts)
   end
 end
 
-path = "Inputs/day-10.txt"
+path = 'Inputs/day-10.txt'
 inputs = parse_input(path)
-puts "part 1: #{solve_part_1(inputs)}"
-puts "part 2: #{solve_part_2(inputs)}"
+puts "part 1: #{solve_part1(inputs)}"
+puts "part 2: #{solve_part2(inputs)}"

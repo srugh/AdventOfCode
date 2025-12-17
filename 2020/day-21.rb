@@ -1,20 +1,19 @@
-require 'set'
+# frozen_string_literal: true
+
 def parse_input(path)
   i = []
   a = []
-  File.readlines(path, chomp:true).each do |line|
-    parts = line.split(" (contains ")
-    i.push(parts[0].split(" ").map {|c| c.chomp})
+  File.readlines(path, chomp: true).each do |line|
+    parts = line.split(' (contains ')
+    i.push(parts[0].split.map(&:chomp))
     a.push(parts[1].scan(/(\w+)/).flatten)
   end
   [i, a]
 end
 
-
-def solve_part_1(ingredients, allergens)
-  allergens_hash = Hash.new
-  ingredients_hash = Hash.new
-  
+def solve_part1(ingredients, allergens)
+  allergens_hash = {}
+  ingredients_hash = {}
 
   allergens.each_with_index do |as, idx|
     as.each do |a|
@@ -36,45 +35,42 @@ def solve_part_1(ingredients, allergens)
     end
   end
 
-#p allergens_hash
-#p ingredients_hash
-#p i_to_a
-#p a_to_i
+  # p allergens_hash
+  # p ingredients_hash
+  # p i_to_a
+  # p a_to_i
 
-p ingredients
-#p allergens
-candidates = Hash.new
-c_set = Set.new
+  p ingredients
+  # p allergens
+  candidates = {}
+  c_set = Set.new
   allergens_hash.each do |k, v|
-    ings = []
-    
-    v.each do |food|
-      
-      ings.push(ingredients[food])
+    ings = v.map do |food|
+      ingredients[food]
     end
-    candidates[k] = ings.inject(:&) 
+    candidates[k] = ings.inject(:&)
   end
-p candidates
+  p candidates
 
-candidates.each do |k, v|
-  v.each do |i|
-    c_set.add(i)
+  candidates.each_value do |v|
+    v.each do |i|
+      c_set.add(i)
+    end
   end
-end
 
   ing_set = Set.new
-  ing_counts = Hash.new
+  ing_counts = {}
   ingredients.each do |ing|
     ing.each do |i|
       ing_set.add(i)
       if ing_counts.key?(i)
-          ing_counts[i] += 1
+        ing_counts[i] += 1
       else
-          ing_counts[i] = 1
+        ing_counts[i] = 1
       end
     end
   end
-p ing_set
+  p ing_set
 
   safe = ing_set - c_set
 
@@ -85,46 +81,43 @@ p ing_set
     part_1 += ing_counts[i]
   end
 
-
-
-  known_links = Hash.new
-  cand_dup = candidates.dup
-  while candidates.size > 0
+  known_links = {}
+  candidates.dup
+  while candidates.size.positive?
     candidates.each do |k, v|
       puts "k: #{k}, v: #{v}"
       p known_links
-      if v.size == 1
-        puts "deleting"
-        puts k
-        known_links[k] = v[0]
-        candidates.delete(k)
+      next unless v.size == 1
 
-        candidates.each do |k2,v2|
-          puts k2
-          p v2
-          p v
-          if v2.include?(v[0])
-            puts "here"
-            candidates[k2].delete(v[0])
-          end
+      puts 'deleting'
+      puts k
+      known_links[k] = v[0]
+      candidates.delete(k)
+
+      candidates.each do |k2, v2|
+        puts k2
+        p v2
+        p v
+        if v2.include?(v[0])
+          puts 'here'
+          candidates[k2].delete(v[0])
         end
-        
       end
     end
   end
-  sorted_hash = known_links.sort_by { |key, value| key }.to_h
+  sorted_hash = known_links.sort_by { |key, _value| key }.to_h
 
-  bad_string = ""
-  sorted_hash.each do |k, v|
+  bad_string = ''
+  sorted_hash.each_value do |v|
     bad_string += v
-    bad_string += ","
+    bad_string += ','
   end
-  bad_string[bad_string.size-1] = ""
+  bad_string[bad_string.size - 1] = ''
   p bad_string
 end
-path = "Inputs/day-21.txt"
-#path = "Inputs/day-21-sample.txt"
+path = 'Inputs/day-21.txt'
+# path = "Inputs/day-21-sample.txt"
 ingredients, allergens = parse_input(path)
-part_1 = solve_part_1(ingredients, allergens)
+part_1 = solve_part1(ingredients, allergens)
 
 puts "part 1: #{part_1}"

@@ -1,8 +1,10 @@
-def solve_part_1(n)
+# frozen_string_literal: true
+
+def solve_part1(n)
   return 0 if n == 1
 
   side_len = Math.sqrt(n).ceil
-  side_len += 1 if side_len.even?         # ensure odd
+  side_len += 1 if side_len.even? # ensure odd
 
   radius  = side_len / 2
   max_val = side_len * side_len
@@ -10,7 +12,6 @@ def solve_part_1(n)
 
   radius + (offset - radius).abs
 end
-
 
 NEIGHBOR_OFFSETS = [-1, 0, 1].product([-1, 0, 1]) - [[0, 0]]
 
@@ -20,12 +21,12 @@ def neighbor_sum(grid, x, y)
   end
 end
 
-def solve_part_2(limit)
+def solve_part2(limit)
   grid = Hash.new(0)
   x = y = 0
   grid[[0, 0]] = 1
 
-  dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]]  # right, up, left, down
+  dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]] # right, up, left, down
   step_len = 1
   dir_idx = 0
 
@@ -50,7 +51,7 @@ def solve_part_2(limit)
   end
 end
 
-num = 368078
+num = 368_078
 
-puts "part 1: #{solve_part_1(num)}"
-puts "part 2: #{solve_part_2(num)}"
+puts "part 1: #{solve_part1(num)}"
+puts "part 2: #{solve_part2(num)}"

@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 def parse_input(path)
-   File.read(path).split(/\n/)
+  File.read(path).split("\n")
 end
 
-def solve_part_1(input)
-  char_val = Hash.new
+def solve_part1(input)
+  char_val = {}
   value = 1
 
   ('a'..'z').each do |letter|
@@ -16,19 +18,19 @@ def solve_part_1(input)
     char_val[letter] = value
     value += 1
   end
- 
+
   total = 0
   input.each do |s|
-    shared = (s[0, s.size/2].chars & s[s.size/2, s.size-1].chars)
+    shared = (s[0, s.size / 2].chars & s[s.size / 2, s.size - 1].chars)
     val = char_val[shared[0]]
-    total = total + val
+    total += val
   end
 
   total
 end
 
-def solve_part_2(input)
-  char_val = Hash.new
+def solve_part2(input)
+  char_val = {}
   value = 1
 
   ('a'..'z').each do |letter|
@@ -43,7 +45,7 @@ def solve_part_2(input)
   end
 
   total = 0
-  while input.size > 0 do
+  while input.size.positive?
     group = []
     group.push(input.shift)
     group.push(input.shift)
@@ -51,16 +53,15 @@ def solve_part_2(input)
 
     badge = group.map(&:chars).inject(:&)
     val = char_val[badge[0]]
-    total = total + val
+    total += val
   end
   total
 end
 
-
-path = "Inputs/day-03.txt"
+path = 'Inputs/day-03.txt'
 input = parse_input(path)
-part_1 = solve_part_1(input)
-part_2 = solve_part_2(input)
+part_1 = solve_part1(input)
+part_2 = solve_part2(input)
 
 puts "part_1: #{part_1}"
 puts "part_2: #{part_2}"

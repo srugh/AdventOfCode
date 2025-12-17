@@ -1,4 +1,4 @@
-require 'set'
+# frozen_string_literal: true
 
 # Define a Worker class to track current task and remaining time
 class Worker
@@ -37,13 +37,11 @@ end
 
 # Method to parse a single instruction line
 def parse_instruction(line)
-  if line =~ /Step (\w) must be finished before step (\w) can begin./
-    prerequisite = $1
-    step = $2
-    return prerequisite, step
-  else
-    raise "Invalid instruction format: #{line}"
-  end
+  raise "Invalid instruction format: #{line}" unless line =~ /Step (\w) must be finished before step (\w) can begin./
+
+  prerequisite = Regexp.last_match(1)
+  step = Regexp.last_match(2)
+  [prerequisite, step]
 end
 
 # Building the dependencies hash
@@ -58,7 +56,7 @@ def build_dependencies(instructions)
     steps.add(step)
   end
 
-  return dependencies, steps
+  [dependencies, steps]
 end
 
 # Read instructions from a file
@@ -81,9 +79,7 @@ def detect_cycles(dependencies, steps)
   stack = {}
 
   steps.each do |step|
-    if !visited[step]
-      return true if dfs_cycle_detect(step, dependencies, visited, stack)
-    end
+    return true if !visited[step] && dfs_cycle_detect(step, dependencies, visited, stack)
   end
   false
 end
@@ -125,26 +121,26 @@ def determine_step_order_with_workers(dependencies, steps, worker_count, base_du
     workers.each do |worker|
       next unless worker.idle?
 
-      if available_steps.any?
-        next_step = available_steps.shift
-        duration = step_duration(next_step, base_duration)
-        worker.assign_step(next_step, duration)
-        in_progress_steps.add(next_step)
-        # Uncomment the line below for debugging assignments
-        # puts "Time #{time}: Assigned Step #{next_step} to Worker #{workers.index(worker)+1} (Duration: #{duration}s)"
-      end
+      next unless available_steps.any?
+
+      next_step = available_steps.shift
+      duration = step_duration(next_step, base_duration)
+      worker.assign_step(next_step, duration)
+      in_progress_steps.add(next_step)
+      # Uncomment the line below for debugging assignments
+      # puts "Time #{time}: Assigned Step #{next_step} to Worker #{workers.index(worker)+1} (Duration: #{duration}s)"
     end
 
     # Process one second of work for each worker
     completed_this_second = []
     workers.each do |worker|
       completed_step = worker.work_one_second
-      if completed_step
-        completed_this_second << completed_step
-        in_progress_steps.delete(completed_step)
-        # Uncomment the line below for debugging completions
-        # puts "Time #{time}: Step #{completed_step} completed by Worker #{workers.index(worker)+1}"
-      end
+      next unless completed_step
+
+      completed_this_second << completed_step
+      in_progress_steps.delete(completed_step)
+      # Uncomment the line below for debugging completions
+      # puts "Time #{time}: Step #{completed_step} completed by Worker #{workers.index(worker)+1}"
     end
 
     # Update completed steps and available steps
@@ -152,12 +148,10 @@ def determine_step_order_with_workers(dependencies, steps, worker_count, base_du
       completed_steps.add(step)
 
       # Remove this step from other steps' dependencies
-      dependencies.each do |step_key, prereqs|
+      dependencies.each_value do |prereqs|
         prereqs.delete(step)
-      end
 
-      # Find new available steps: steps whose prerequisites are all completed
-      dependencies.each do |step_key, prereqs|
+        # Find new available steps: steps whose prerequisites are all completed
         if prereqs.empty? && !completed_steps.include?(step_key) && !in_progress_steps.include?(step_key) && !available_steps.include?(step_key)
           available_steps << step_key
         end
@@ -171,18 +165,18 @@ def determine_step_order_with_workers(dependencies, steps, worker_count, base_du
     time += 1
   end
 
-  return time
+  time
 end
 
 # Main Execution Flow for Part Two
 def main_part_two
-  input_file = "Inputs/day-07.txt" # Replace with your actual input file path
+  input_file = 'Inputs/day-07.txt' # Replace with your actual input file path
   instructions = read_instructions(input_file)
   dependencies, steps = build_dependencies(instructions)
 
   # Detect cycles before proceeding
   if detect_cycles(dependencies, steps)
-    puts "Error: The input contains a cycle in the dependencies. Please remove or correct the conflicting instructions."
+    puts 'Error: The input contains a cycle in the dependencies. Please remove or correct the conflicting instructions.'
     exit
   end
 

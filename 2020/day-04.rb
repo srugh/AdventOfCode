@@ -1,135 +1,106 @@
+# frozen_string_literal: true
+
 def parse_input(file)
-    passports = []
-    passport = Hash.new
+  passports = []
+  passport = {}
 
-    File.readlines(file, chomp:true).each do |line|
-      if line == ""
-        passports.push(passport)
-        passport = Hash.new
-        next
-      end
-
-      parts = line.split
-      parts.each do |part|
-        values = part.split(":")
-        passport[values[0]] = values[1]
-      end
-
+  File.readlines(file, chomp: true).each do |line|
+    if line == ''
+      passports.push(passport)
+      passport = {}
+      next
     end
 
-    passports.push(passport)
+    parts = line.split
+    parts.each do |part|
+      values = part.split(':')
+      passport[values[0]] = values[1]
+    end
+  end
 
-    passports
+  passports.push(passport)
+
+  passports
 end
 
-def solve_part_1(passports)
-  required_fields = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
+def solve_part1(passports)
+  required_fields = %w[byr iyr eyr hgt hcl ecl pid]
   good = 0
   passports.each do |passport|
     valid = true
     required_fields.each do |field|
-      if valid && !passport.key?(field)
-        valid = false
-      end
+      valid = false if valid && !passport.key?(field)
     end
 
-    if valid 
-      good += 1
-    end
+    good += 1 if valid
   end
   good
 end
 
-def solve_part_2(passports)
-  required_fields = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
+def solve_part2(passports)
+  required_fields = %w[byr iyr eyr hgt hcl ecl pid]
   good = 0
   passports.each do |passport|
     valid = true
     required_fields.each do |field|
-      if valid && !passport.key?(field)
-        valid = false
-      end
-      if valid
-        valid = check_value(field, passport[field])
-      end
+      valid = false if valid && !passport.key?(field)
+      valid = check_value(field, passport[field]) if valid
     end
 
-    if valid 
-      good += 1
-    end
+    good += 1 if valid
   end
   good
-
 end
 
 def check_value(key, value)
+  eye_color_whitelist = %w[amb blu brn gry grn hzl oth]
 
-  eye_color_whitelist = ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]
-
-  if value == nil
-    return false
-  end
+  return false if value.nil?
 
   case key
-  when "byr"
+  when 'byr'
     value = value.to_i
-    if value < 1920 || value > 2002
-      return false
-    end
-  when "iyr"
+    return false if value < 1920 || value > 2002
+  when 'iyr'
     value = value.to_i
-    if value < 2010 || value > 2020
-      return false
-    end
-  when "eyr"
+    return false if value < 2010 || value > 2020
+  when 'eyr'
     value = value.to_i
-    if value < 2020 || value > 2030
-      return false
-    end
-  when "hgt"
+    return false if value < 2020 || value > 2030
+  when 'hgt'
     match_data = value.match(/(\d+)([A-Za-z]+)/)
-    if !match_data
-      return false
-    end
+    return false unless match_data
+
     num = match_data[1].to_i
     text = match_data[2]
 
-    if text == "cm"
-      if num < 150 || num > 193
-        return false
-      end
-    elsif text == "in"
-      if num < 59 || num > 76
-        return false
-      end
+    if text == 'cm'
+      return false if num < 150 || num > 193
+    elsif text == 'in'
+      return false if num < 59 || num > 76
     else
       return false
     end
-  when "hcl"
-    if value.size != 7 || value[0] != "#"
-      return false
-    end
+  when 'hcl'
+    return false if value.size != 7 || value[0] != '#'
+
     hex = value[1..6]
-    if !hex.match?(/\A\h+\z/)
-      return false
-    end
-  when "ecl"
+    return false unless hex.match?(/\A\h+\z/)
+  when 'ecl'
     return eye_color_whitelist.include?(value)
-  when "pid"
-    if !value.match?(/\A\d+\Z/) || value.length != 9
-      return false
-    end
+  when 'pid'
+    return false if !value.match?(/\A\d+\Z/) || value.length != 9
   end
 
   true
 end
 
-file = "Inputs/day-04.txt"
+file = 'Inputs/day-04.txt'
 
 inputs = parse_input(file)
 
-part_1 = solve_part_1(inputs)
-part_2 = solve_part_2(inputs)
+part_1 = solve_part1(inputs)
+part_2 = solve_part2(inputs)
 
 puts "part 1: #{part_1}"
 puts "part 2: #{part_2}"

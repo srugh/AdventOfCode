@@ -1,4 +1,4 @@
-require 'set'
+# frozen_string_literal: true
 
 # =========================
 # Part 1: Identify All Unique Triangles
@@ -8,7 +8,7 @@ require 'set'
 def parse_input(file)
   loc_pairs = []
   File.readlines(file, chomp: true).each do |line|
-    parts = line.split("-")
+    line.split('-')
     loc_pairs.push(line)
   end
   loc_pairs
@@ -35,13 +35,13 @@ def find_unique_triangles(adjacency)
     sorted_neighbors = neighbors.to_a.sort
     sorted_neighbors.each_with_index do |neighbor1, index|
       # Iterate through pairs of neighbors where neighbor2 > neighbor1 to avoid duplicate pairs
-      sorted_neighbors[(index + 1)..-1].each do |neighbor2|
+      sorted_neighbors[(index + 1)..].each do |neighbor2|
         # Check if neighbor1 and neighbor2 are connected
-        if adjacency[neighbor1].include?(neighbor2)
-          # Sort the triangle to ensure uniqueness
-          triangle = [node, neighbor1, neighbor2].sort
-          triangles.add(triangle)
-        end
+        next unless adjacency[neighbor1].include?(neighbor2)
+
+        # Sort the triangle to ensure uniqueness
+        triangle = [node, neighbor1, neighbor2].sort
+        triangles.add(triangle)
       end
     end
   end
@@ -87,8 +87,7 @@ def find_largest_clique(adjacency)
   bron_kerbosch(r, p, x, adjacency, cliques)
 
   # Find the clique with the maximum size
-  largest_clique = cliques.max_by { |clique| clique.size }
-  largest_clique
+  cliques.max_by(&:size)
 end
 
 # =========================
@@ -96,7 +95,7 @@ end
 # =========================
 
 # Replace "Inputs/input.txt" with the path to your actual input file
-input_file = "Inputs/input.txt"
+input_file = 'Inputs/input.txt'
 
 # Check if the input file exists
 unless File.exist?(input_file)
@@ -109,7 +108,7 @@ loc_pairs = parse_input(input_file)
 adjacency = build_adjacency_list(loc_pairs)
 triangles = find_unique_triangles(adjacency)
 
-puts "----- Part 1: Identify All Unique Triangles -----"
+puts '----- Part 1: Identify All Unique Triangles -----'
 triangles.each do |triangle|
   puts triangle.join(',')
 end
@@ -120,12 +119,12 @@ puts
 largest_clique = find_largest_clique(adjacency)
 
 if largest_clique.nil? || largest_clique.empty?
-  puts "----- Part 2: Find the Largest Clique -----"
-  puts "No cliques found in the network."
+  puts '----- Part 2: Find the Largest Clique -----'
+  puts 'No cliques found in the network.'
 else
   sorted_clique = largest_clique.sort
   password = sorted_clique.join(',')
-  puts "----- Part 2: Find the Largest Clique -----"
+  puts '----- Part 2: Find the Largest Clique -----'
   puts "Largest Clique (LAN Party Computers): #{password}"
   puts "Password to Enter the LAN Party: #{password}"
 end

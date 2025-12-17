@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 def parse_input(path)
   reactions = {}
 
   File.readlines(path, chomp: true).each do |line|
-    lhs, rhs = line.split(" => ")
+    lhs, rhs = line.split(' => ')
 
     out_qty, out_chem = rhs.split
-    inputs = lhs.split(", ").map { |chunk|
+    inputs = lhs.split(', ').map do |chunk|
       qty, chem = chunk.split
       [chem, qty.to_i]
-    }
+    end
 
     reactions[out_chem] = {
       out: out_qty.to_i,
@@ -17,14 +19,13 @@ def parse_input(path)
   end
 
   reactions
-
 end
 
 def ore_for(chem, amount, reactions, leftovers)
-  return amount if chem == "ORE"
+  return amount if chem == 'ORE'
 
   # use leftovers
-  if leftovers[chem] && leftovers[chem] > 0
+  if leftovers[chem]&.positive?
     use = [amount, leftovers[chem]].min
     amount -= use
     leftovers[chem] -= use
@@ -51,12 +52,12 @@ end
 
 def ore_for_fuel(fuel_amount, reactions)
   leftovers = Hash.new(0)
-  ore_for("FUEL", fuel_amount, reactions, leftovers)
+  ore_for('FUEL', fuel_amount, reactions, leftovers)
 end
 
 ORE_LIMIT = 1_000_000_000_000
 
-def solve_part_2(reactions)
+def solve_part2(reactions)
   # Find an upper bound where ore_for_fuel(mid) > ORE_LIMIT
   low  = 1
   high = 1
@@ -74,13 +75,11 @@ def solve_part_2(reactions)
     end
   end
 
-  low  # maximum fuel with <= ORE_LIMIT ORE
+  low # maximum fuel with <= ORE_LIMIT ORE
 end
 
-
-path = "Inputs/day-14.txt"
+path = 'Inputs/day-14.txt'
 reactions = parse_input(path)
 leftovers = Hash.new(0)
-puts ore_for("FUEL", 1, reactions, leftovers)
-p solve_part_2(reactions)
-
+puts ore_for('FUEL', 1, reactions, leftovers)
+p solve_part2(reactions)

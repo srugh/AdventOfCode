@@ -1,17 +1,18 @@
+# frozen_string_literal: true
+
 def parse_input(path)
-   File.read(path).split(",").map(&:to_i)
+  File.read(path).split(',').map(&:to_i)
 end
 
-def solve_part_1(input)
-  
-  80.times do |i|
+def solve_part1(input)
+  80.times do |_i|
     spawns = 0
     input.each_with_index do |fish, idx|
-      if fish == 0
+      if fish.zero?
         spawns += 1
         input[idx] = 6
       else
-      input[idx] -= 1
+        input[idx] -= 1
       end
     end
     spawns.times do
@@ -21,7 +22,7 @@ def solve_part_1(input)
   input.count
 end
 
-def solve_part_2(input)
+def solve_part2(input)
   counts = Array.new(9, 0)
   input.each do |t|
     counts[t] += 1
@@ -42,12 +43,11 @@ def solve_part_2(input)
   counts.sum
 end
 
-
-path = "Inputs/day-06.txt"
+path = 'Inputs/day-06.txt'
 input = parse_input(path)
-#input = [3,4,3,1,2]
-part_1 = solve_part_1(input.clone)
-part_2 = solve_part_2(input)
+# input = [3,4,3,1,2]
+part_1 = solve_part1(input.clone)
+part_2 = solve_part2(input)
 
 puts "part_1: #{part_1}"
 puts "part_2: #{part_2}"

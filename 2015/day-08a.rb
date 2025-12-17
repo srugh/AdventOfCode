@@ -1,9 +1,10 @@
+# frozen_string_literal: true
+
 def parse_input(path)
-  File.read(path).split(/\n/)
+  File.read(path).split("\n")
 end
 
-def solve_part_1(input)
-
+def solve_part1(input)
   code_total   = 0
   memory_total = 0
 
@@ -15,7 +16,7 @@ def solve_part_1(input)
   code_total - memory_total
 end
 
-def solve_part_2(lines)
+def solve_part2(lines)
   total_orig    = 0
   total_encoded = 0
 
@@ -31,10 +32,10 @@ def solve_part_2(lines)
   total_encoded - total_orig
 end
 
-path = "Inputs/day-08.txt"
+path = 'Inputs/day-08.txt'
 input = parse_input(path)
-part_1 = solve_part_1(input)
+part_1 = solve_part1(input)
 
-part_2 = solve_part_2(input)
+part_2 = solve_part2(input)
 puts "part_1: #{part_1}"
 puts "part_2: #{part_2}"

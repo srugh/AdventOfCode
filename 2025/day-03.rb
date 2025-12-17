@@ -1,13 +1,15 @@
+# frozen_string_literal: true
+
 def parse_input(path)
   File.readlines(path, chomp: true)
 end
 
-def solve_part_1(banks)
+def solve_part1(banks)
   total = 0
 
   banks.each do |bank|
-    joltage_offsets = Hash.new{|hash, key| hash[key]=[]}
-    
+    joltage_offsets = Hash.new { |hash, key| hash[key] = [] }
+
     bank.each_char.with_index do |ch, i|
       joltage_offsets[ch.to_i].push(i)
     end
@@ -16,15 +18,15 @@ def solve_part_1(banks)
       next unless joltage_offsets.key?(joltage)
       next if joltage_offsets[joltage].first == bank.length - 1
 
-      second_digit = bank[joltage_offsets[joltage].first + 1..].chars.map(&:to_i).max
-      total += joltage * 10 + second_digit
+      second_digit = bank[(joltage_offsets[joltage].first + 1)..].chars.map(&:to_i).max
+      total += (joltage * 10) + second_digit
       break
     end
   end
   total
 end
 
-def solve_part_2(banks)
+def solve_part2(banks)
   batteries_needed = 12
   banks.sum do |bank|
     max_joltage(bank, batteries_needed).to_i
@@ -32,8 +34,8 @@ def solve_part_2(banks)
 end
 
 def max_joltage(bank, batteries_needed)
-  result = ""
-  current_offset  = 0
+  result = ''
+  current_offset = 0
 
   while result.length < batteries_needed
     last_possible_start_offset = bank.length - (batteries_needed - result.length)
@@ -41,14 +43,14 @@ def max_joltage(bank, batteries_needed)
     best_digit = -1
     best_pos   = -1
 
-    (current_offset.upto(last_possible_start_offset)).each do |i|
+    current_offset.upto(last_possible_start_offset).each do |i|
       joltage = bank[i].to_i
 
-      if joltage > best_digit
-        best_digit = joltage
-        best_pos   = i
-        break if best_digit == 9 
-      end
+      next unless joltage > best_digit
+
+      best_digit = joltage
+      best_pos   = i
+      break if best_digit == 9
     end
 
     result << best_digit.to_s
@@ -58,8 +60,8 @@ def max_joltage(bank, batteries_needed)
   result
 end
 
-path = "Inputs/day-03.txt"
+path = 'Inputs/day-03.txt'
 banks = parse_input(path)
 
-puts "part 1: #{solve_part_1(banks)}"
-puts "part 2: #{solve_part_2(banks)}"
+puts "part 1: #{solve_part1(banks)}"
+puts "part 2: #{solve_part2(banks)}"

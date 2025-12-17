@@ -7,7 +7,7 @@ def read_input(path):
 def parse_file(raw):
     return raw.splitlines()
    
-def solve_part_1(data):
+def solve_part1(data):
     total = 0
     for str in data:
         integers_as_strings = re.findall(r'\d', str)
@@ -46,7 +46,7 @@ def digits_in_line(line: str) -> list[int]:
     return found
 
 
-def solve_part_2(data):
+def solve_part2(data):
     total = 0
     for line in data:
         digits = digits_in_line(line)
@@ -56,5 +56,5 @@ def solve_part_2(data):
 path = "Inputs/day-01.txt"
 raw = read_input(path)
 data = parse_file(raw)
-#print("part 1: " + str(solve_part_1(data)))
-print("part 2: " + str(solve_part_2(data)))
+#print("part 1: " + str(solve_part1(data)))
+print("part 2: " + str(solve_part2(data)))

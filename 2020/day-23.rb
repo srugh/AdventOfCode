@@ -1,57 +1,44 @@
+# frozen_string_literal: true
 
-
-
-def solve_part_1(input)
-  
-  moves = 100
+def solve_part1(input)
   moves = 10
   cur = 0
 
-  cups = input.chars.map { |i| i.to_i}
+  cups = input.chars.map(&:to_i)
 
   moves.times do
     picked_up = []
     open_spots = []
     # pick up 3 cups after cur cup
-    (1..3).each_with_index do |idx|
-      picked_up.push((cups[(cur+idx)%moves]))
-      cups[(cur+idx)%moves] = ""
-      open_spots.push((cur+idx)%moves)
+    (1..3).each do |idx|
+      picked_up.push(cups[(cur + idx) % moves])
+      cups[(cur + idx) % moves] = ''
+      open_spots.push((cur + idx) % moves)
     end
 
     # select destination cup
     dest = cups[cur] - 1
-    found = !picked_up.include?(dest) && dest > 0
-    while !found
+    found = !picked_up.include?(dest) && dest.positive?
+    until found
       if picked_up.include?(dest)
         dest -= 1
       elsif dest < 1
         dest = 9
       end
-      found = !picked_up.include?(dest) && dest > 0
+      found = !picked_up.include?(dest) && dest.positive?
     end
 
     # replace cups
-    idx = cups.find_index(dest)
-    temp = []
-    
+    cups.find_index(dest)
 
     # move/update current cup
     cur = (cur + 1) % moves
   end
-
 end
+start = '389125467'
 
-
-
-
-start = "487912365"
-start = "389125467"
-
-
-
-part_1 = solve_part_1(start)
-#part_2 = solve_part_2(numbers)
+part_1 = solve_part1(start)
+# part_2 = solve_part2(numbers)
 
 puts "part 1: #{part_1}"
-#puts "part 2: #{part_2}"
+# puts "part 2: #{part_2}"

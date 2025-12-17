@@ -1,4 +1,4 @@
-require 'set'
+# frozen_string_literal: true
 
 # Constants for the maze
 WALL = '#'
@@ -10,7 +10,7 @@ DIRECTIONS = [
   { dx: 0, dy: 1 },   # East
   { dx: 1, dy: 0 },   # South
   { dx: 0, dy: -1 }   # West
-]
+].freeze
 
 # Helper method to parse the input file and extract the grid, start, and end points
 def parse_input(file_name)
@@ -31,27 +31,25 @@ end
 
 # Breadth-first search (BFS) to find all optimal paths
 def bfs(grid, start_idx, end_idx)
-    min_score = Float::INFINITY
-    queue = []
-    visited = {}
-    size_to_indices = Hash.new { |h, k| h[k] = [] }
+  min_score = Float::INFINITY
+  queue = []
+  visited = {}
+  size_to_indices = Hash.new { |h, k| h[k] = [] }
 
-    # Initial state
-    queue << start_idx
+  # Initial state
+  queue << start_idx
 
-    until queue.empty?
-        curr_state = queue.shift
+  until queue.empty?
+    curr_state = queue.shift
 
-        # Debugging the current state
-        puts "Processing state: #{curr_state}"
+    # Debugging the current state
+    puts "Processing state: #{curr_state}"
 
-        # Prune paths that are already worse than the best found
-        #next if curr_state[:score] > min_score
+    # Prune paths that are already worse than the best found
+    # next if curr_state[:score] > min_score
 
-        # Check if we reached the end
-        if curr_state == end_idx
-            next
-        end
+    # Check if we reached the end
+    next if curr_state == end_idx
 
     # Process neighbors
     get_neighbors(curr_state[:reindeer]).each do |neighbor|
@@ -66,9 +64,7 @@ def bfs(grid, start_idx, end_idx)
       puts "Neighbor: #{neighbor}, Score: #{score}, Current Min Score: #{min_score}"
 
       # Skip if already visited with a better score
-      if visited[neighbor] && visited[neighbor] <= score
-        next
-      end
+      next if visited[neighbor] && visited[neighbor] <= score
 
       visited[neighbor] = score
 
@@ -95,7 +91,7 @@ def get_neighbors(reindeer)
   opposite_dir = { dx: -curr_dir[:dx], dy: -curr_dir[:dy] }
 
   DIRECTIONS.each do |dir|
-    next if dir == opposite_dir  # Skip the opposite direction
+    next if dir == opposite_dir # Skip the opposite direction
 
     n_idx = { x: curr_idx[:x] + dir[:dx], y: curr_idx[:y] + dir[:dy] }
     neighbors << { idx: n_idx, dir: dir }
@@ -105,11 +101,10 @@ def get_neighbors(reindeer)
 end
 
 # Main program
-  input_file = "Inputs/sample.txt" # Change to your input file
-  grid, start_idx, end_idx = parse_input(input_file)
+input_file = 'Inputs/sample.txt' # Change to your input file
+grid, start_idx, end_idx = parse_input(input_file)
 
-  part1, part2 = bfs(grid, start_idx, end_idx)
+part1, part2 = bfs(grid, start_idx, end_idx)
 
-  puts "Part One: #{part1}" # Expected score
-  puts "Part Two: #{part2}" # Number of unique tiles visited by optimal paths
-
+puts "Part One: #{part1}" # Expected score
+puts "Part Two: #{part2}" # Number of unique tiles visited by optimal paths

@@ -1,4 +1,4 @@
-require 'set'
+# frozen_string_literal: true
 
 def load_grid(input_file)
   File.readlines(input_file, chomp: true).map { |line| line.chars.map(&:to_i) }
@@ -13,7 +13,7 @@ def find_trail_heads(grid)
   trail_heads = []
   grid.each_with_index do |row, row_idx|
     row.each_with_index do |value, col_idx|
-      trail_heads << [row_idx, col_idx] if value == 0
+      trail_heads << [row_idx, col_idx] if value.zero?
     end
   end
   trail_heads
@@ -38,21 +38,19 @@ def find_paths(trail_heads, grid)
     queue = [trail_head]
     reachable_nines = Set.new
 
-    while !queue.empty?
+    until queue.empty?
       cur_pos = queue.shift
       visited.add(cur_pos)
 
       directions.each do |dir|
         next_pos = [cur_pos[0] + dir[0], cur_pos[1] + dir[1]]
 
-        if is_valid?(cur_pos, next_pos, grid) && !visited.include?(next_pos)
-          queue << next_pos
-          visited.add(next_pos)
+        next unless is_valid?(cur_pos, next_pos, grid) && !visited.include?(next_pos)
 
-          if grid[next_pos[0]][next_pos[1]] == 9
-            reachable_nines.add(next_pos)
-          end
-        end
+        queue << next_pos
+        visited.add(next_pos)
+
+        reachable_nines.add(next_pos) if grid[next_pos[0]][next_pos[1]] == 9
       end
     end
 
@@ -63,8 +61,8 @@ def find_paths(trail_heads, grid)
 end
 
 # Main Program
-#input_file = "Inputs/sample.txt"
-input_file = "Inputs/input1.txt"
+# input_file = "Inputs/sample.txt"
+input_file = 'Inputs/input1.txt'
 grid = load_grid(input_file)
 complete_paths = calc_paths(grid)
 puts "Complete paths: #{complete_paths}"

@@ -1,4 +1,4 @@
-require 'set'
+# frozen_string_literal: true
 
 # =========================
 # Helper Functions
@@ -6,11 +6,7 @@ require 'set'
 
 # Function to parse the input file and create a grid
 def parse_input(input_file)
-  grid = []
-  File.readlines(input_file, chomp: true).each do |line|
-    grid << line.chars
-  end
-  grid
+  File.readlines(input_file, chomp: true).map(&:chars)
 end
 
 # Function to find the start (S) and end (E) positions in the grid
@@ -51,7 +47,7 @@ def bfs_path(grid, start_pos, end_pos)
   queue << start_pos
   visited.add(start_pos)
 
-  while !queue.empty?
+  until queue.empty?
     current = queue.shift
     return reconstruct_path(parent, current) if current == end_pos
 
@@ -94,7 +90,7 @@ def bfs_distance_map(grid, start_pos)
   visited.add(start_pos)
   distance_map[start_pos[0]][start_pos[1]] = 0
 
-  while !queue.empty?
+  until queue.empty?
     current, dist = queue.shift
 
     dirs.each do |dir|
@@ -116,11 +112,12 @@ end
 def generate_cheat_subpaths(path, max_cheat_duration)
   subpaths = []
 
-  path.each_with_index do |start_pos, i|
-    (i + 1...path.size).each do |j|
+  path.each_with_index do |_start_pos, i|
+    ((i + 1)...path.size).each do |j|
       cheat_duration = j - i
       break if cheat_duration > max_cheat_duration
-      subpath = path[i..j]
+
+      path[i..j]
       subpaths << { start: path[i], end: path[j], original_length: cheat_duration }
     end
   end
@@ -137,7 +134,7 @@ def bfs_cheat_path(grid, start_pos, end_pos, step_limit)
   queue << [start_pos, 0]
   visited.add(start_pos)
 
-  while !queue.empty?
+  until queue.empty?
     current, dist = queue.shift
     return dist if current == end_pos
     next if dist >= step_limit
@@ -162,10 +159,8 @@ def find_subpath_indices(initial_path, start, fin)
   indices = []
   found_start = false
 
-  initial_path.each_with_index do |pos, idx|
-    if pos == start
-      found_start = true
-    end
+  initial_path.each_with_index do |pos, _idx|
+    found_start = true if pos == start
 
     if found_start
       indices << pos
@@ -180,7 +175,7 @@ end
 def calculate_cheat_savings(grid, subpaths, initial_path, min_saving, max_saving, saving_factor)
   cheat_savings = Hash.new(0)
 
-  subpaths.each_with_index do |subpath, idx|
+  subpaths.each_with_index do |subpath, _idx|
     start = subpath[:start]
     fin = subpath[:end]
     original_length = subpath[:original_length]
@@ -208,15 +203,15 @@ def calculate_cheat_savings(grid, subpaths, initial_path, min_saving, max_saving
     saving = steps_saved * saving_factor
 
     # Only consider cheats that save between min_saving and max_saving picoseconds
-    if saving >= min_saving && saving <= max_saving
-      # Round saving to the nearest integer for categorization
-      rounded_saving = saving.round
-      cheat_savings[rounded_saving] += 1
+    next unless saving.between?(min_saving, max_saving)
 
-      # Debugging output
-      puts "-> Valid Cheat: Saves #{rounded_saving} picoseconds (Steps Saved: #{steps_saved})"
-      puts "   Cheat Path Indices: #{path_indices}"
-    end
+    # Round saving to the nearest integer for categorization
+    rounded_saving = saving.round
+    cheat_savings[rounded_saving] += 1
+
+    # Debugging output
+    puts "-> Valid Cheat: Saves #{rounded_saving} picoseconds (Steps Saved: #{steps_saved})"
+    puts "   Cheat Path Indices: #{path_indices}"
   end
 
   cheat_savings
@@ -224,7 +219,7 @@ end
 
 # Function to deep copy the grid
 def deep_copy_grid(grid)
-  grid.map { |row| row.dup }
+  grid.map(&:dup)
 end
 
 # Function to display the grid with cheat paths (optional, for debugging)
@@ -233,9 +228,9 @@ def pretty_print_grid_with_cheats(grid, initial_path, cheat_paths = [])
   grid.each_with_index do |row, r|
     row.each_with_index do |cell, c|
       if initial_path.include?([r, c])
-        print "X"
+        print 'X'
       elsif cheat_paths.any? { |cp| cp[:path].include?([r, c]) }
-        print "*"
+        print '*'
       else
         print cell
       end
@@ -250,7 +245,7 @@ end
 # =========================
 
 # Replace with your actual input file path
-input_file = "Inputs/sample.txt"
+input_file = 'Inputs/sample.txt'
 # input_file = "Inputs/input.txt" # Uncomment this for the actual input
 
 # Parse the input grid
@@ -265,7 +260,7 @@ puts "End Position: #{end_pos}"
 initial_path = bfs_path(grid, start_pos, end_pos)
 
 if initial_path.nil?
-  puts "No path found from S to E."
+  puts 'No path found from S to E.'
   exit
 end
 

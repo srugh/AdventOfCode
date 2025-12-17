@@ -1,15 +1,16 @@
+# frozen_string_literal: true
+
 def parse_file(path)
-  File.read(path).split(/\n/).map {|r| r.split("-").map { |i| i.to_i}}.sort_by { |inner_array| inner_array[0] }
+  File.read(path).split("\n").map { |r| r.split('-').map(&:to_i) }.sort_by { |inner_array| inner_array[0] }
 end
 
-def solve_part_1(input)
-  ranges = []
-  input.each do |r|
-    ranges.push(Range.new(r[0], r[1]))
+def solve_part1(input)
+  ranges = input.map do |r|
+    Range.new(r[0], r[1])
   end
 
-  merged = [ranges.first]  
-  ranges[1..-1].each do |current_range|
+  merged = [ranges.first]
+  ranges[1..].each do |current_range|
     last_merged_range = merged.last
 
     # Check for overlap or adjacency
@@ -26,22 +27,22 @@ def solve_part_1(input)
       merged << current_range
     end
   end
-  
+
   first_valid_int = merged.first.end + 1
- 
+
   possible_ips = 0
-  0.upto(merged.size-2) do |i|
-    possible_ips += merged[i+1].begin - merged[i].end - 1
+  0.upto(merged.size - 2) do |i|
+    possible_ips += merged[i + 1].begin - merged[i].end - 1
   end
 
   possible_ips_2 = 0
-  0.upto(ranges.size-2) do |i|
-    possible_ips_2 += ranges[i+1].begin - ranges[i].end
+  0.upto(ranges.size - 2) do |i|
+    possible_ips_2 += ranges[i + 1].begin - ranges[i].end
   end
 
   [first_valid_int, possible_ips]
 end
 
-path = "Inputs/day-20.txt"
+path = 'Inputs/day-20.txt'
 input = parse_file(path)
-p solve_part_1(input)
+p solve_part1(input)

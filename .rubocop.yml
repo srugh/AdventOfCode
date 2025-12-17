@@ -1,0 +1,24 @@
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.4
+
+Layout/LineLength:
+  Enabled: true
+
+Metrics:
+  Enabled: true
+
+Style/Documentation:
+  Enabled: true
+
+Metrics/MethodLength:
+  Max: 25
+
+Metrics/AbcSize:
+  Max: 25
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Style/FrozenStringLiteralComment:
+  Enabled: false

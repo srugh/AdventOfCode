@@ -23,7 +23,7 @@ def parse_file(raw):
         games[game_id] = match_array
     return games
 
-def solve_part_1(games):
+def solve_part1(games):
     game_data = {"red": 12, "green": 13, "blue": 14}
     total = 0
 
@@ -41,7 +41,7 @@ def solve_part_1(games):
 
     return total
 
-def solve_part_2(games):
+def solve_part2(games):
     total = 0
 
     for key, value in games.items():
@@ -59,5 +59,5 @@ def solve_part_2(games):
 path = "Inputs/day-02.txt"
 raw = read_input(path)
 data = parse_file(raw)
-print("part 1: " + str(solve_part_1(data)))
-print("part 2: " + str(solve_part_2(data)))
+print("part 1: " + str(solve_part1(data)))
+print("part 2: " + str(solve_part2(data)))

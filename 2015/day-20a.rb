@@ -1,17 +1,13 @@
+# frozen_string_literal: true
 
 count = 700_000
 
-
 loop do
-    gifts = 0
-    count.times.each_with_index do |idx|
-        if count % (idx + 1) == 0
-            gifts += (idx + 1) * 10
-        end
-        
-    end
-    puts "house: #{count} \t gifts: #{gifts}"
-    count += 1
-    break unless gifts < 29000000 || count == 665280
+  gifts = 0
+  count.times.each do |idx|
+    gifts += (idx + 1) * 10 if (count % (idx + 1)).zero?
+  end
+  puts "house: #{count} \t gifts: #{gifts}"
+  count += 1
+  break unless gifts < 29_000_000 || count == 665_280
 end
-

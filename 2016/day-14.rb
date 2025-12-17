@@ -1,4 +1,6 @@
-require "digest"
+# frozen_string_literal: true
+
+require 'digest'
 
 # Compute hash for (salt + index), with optional extra stretching.
 # extra_stretch = 0  => plain MD5 (Part 1)
@@ -26,11 +28,11 @@ def find_64th_key_index(salt, extra_stretch: 0)
 
     # Find first triplet (aaa, 777, etc)
     if h =~ /(.)\1\1/
-      ch = $1
+      ch = Regexp.last_match(1)
       five = ch * 5
 
       # Look ahead 1000 hashes for ch * 5
-      found = (i + 1 .. i + 1000).any? do |j|
+      found = ((i + 1)..(i + 1000)).any? do |j|
         get_hash.call(j).include?(five)
       end
 
@@ -44,7 +46,7 @@ def find_64th_key_index(salt, extra_stretch: 0)
 end
 
 # --- main ---
-salt = "ngcjuoqr"
+salt = 'ngcjuoqr'
 
 part1 = find_64th_key_index(salt, extra_stretch: 0)
 part2 = find_64th_key_index(salt, extra_stretch: 2016)

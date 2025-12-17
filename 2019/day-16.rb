@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 def parse_input(path)
-  File.read(path).split(//).map {|i| i.to_i}
+  File.read(path).chars.map(&:to_i)
 end
 
-def solve_part_1(input)
-  pattern = [0, 1, 0, -1]
+def solve_part1(_input)
+  [0, 1, 0, -1]
 end
 
-path = "Inputs/day-16.txt"
+path = 'Inputs/day-16.txt'
 input = parse_input(path)
-puts solve_part_1(input)
+puts solve_part1(input)

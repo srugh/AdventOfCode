@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 def parse_input(path)
-  File.read(path).split(/\n/).map {|i| i.to_i}
+  File.read(path).split("\n").map(&:to_i)
 end
 
-def solve_part_1(input) 
-  hash = Hash.new {|hash, key| hash[key] = [] }
+def solve_part1(input)
+  Hash.new { |hash, key| hash[key] = [] }
   all_combos_for_target = []
   target = input.sum / 3
   8.times do |i|
@@ -20,16 +22,13 @@ def solve_part_1(input)
     combined_values = triplet.flatten
 
     # Check if all values in the combined array are unique
-    if combined_values.uniq.size == combined_values.size
-      unique_triplets << triplet
-    end
+    unique_triplets << triplet if combined_values.uniq.size == combined_values.size
   end
-
 
   p unique_triplets
 end
 
-path = "Inputs/day-24.txt"
+path = 'Inputs/day-24.txt'
 input = parse_input(path)
-p_1 = solve_part_1(input)
+p_1 = solve_part1(input)
 puts "p_1: #{p_1}"

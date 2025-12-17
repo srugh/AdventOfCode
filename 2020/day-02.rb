@@ -1,15 +1,17 @@
-def parse_input(file)
-    inputs = []
-    File.readlines(file, chomp:true).each do |line|
-        parts = line.split
-        range = parts[0].split("-")
-        inputs.push([range[0], range[1], parts[1][0], parts[2]])
-    end
+# frozen_string_literal: true
 
-    inputs
+def parse_input(file)
+  inputs = []
+  File.readlines(file, chomp: true).each do |line|
+    parts = line.split
+    range = parts[0].split('-')
+    inputs.push([range[0], range[1], parts[1][0], parts[2]])
+  end
+
+  inputs
 end
 
-def solve_part_1(inputs)
+def solve_part1(inputs)
   valid_passwords = 0
 
   inputs.each do |input|
@@ -20,15 +22,13 @@ def solve_part_1(inputs)
 
     occurances = pw.count(letter)
 
-    if occurances >= low && occurances <= high
-      valid_passwords += 1
-    end
+    valid_passwords += 1 if occurances.between?(low, high)
   end
 
   valid_passwords
 end
 
-def solve_part_2(inputs)
+def solve_part2(inputs)
   valid_passwords = 0
 
   inputs.each do |input|
@@ -37,21 +37,18 @@ def solve_part_2(inputs)
     letter = input[2]
     pw = input[3]
 
-    if (pw[low-1] == letter) ^ (pw[high-1] == letter)
-      valid_passwords += 1
-    end
+    valid_passwords += 1 if (pw[low - 1] == letter) ^ (pw[high - 1] == letter)
   end
 
   valid_passwords
 end
 
-
-file = "Inputs/day-02.txt"
+file = 'Inputs/day-02.txt'
 
 inputs = parse_input(file)
 
-part_1 = solve_part_1(inputs)
-part_2 = solve_part_2(inputs)
+part_1 = solve_part1(inputs)
+part_2 = solve_part2(inputs)
 
 puts "part 1: #{part_1}"
 puts "part 2: #{part_2}"

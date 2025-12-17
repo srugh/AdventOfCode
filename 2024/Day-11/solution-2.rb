@@ -1,4 +1,4 @@
-require 'set'
+# frozen_string_literal: true
 
 # Cache to store the results of count(stone, steps)
 $cache = {}
@@ -6,14 +6,14 @@ $cache = {}
 # Recursive function to calculate the number of stones for a given stone and remaining blinks
 def count(stone, steps)
   # Base case: If no more steps, this stone contributes 1
-  return 1 if steps == 0
+  return 1 if steps.zero?
 
   # Check cache to avoid recalculating
   cache_key = [stone, steps]
-  #return $cache[cache_key] if $cache.key?(cache_key)
+  # return $cache[cache_key] if $cache.key?(cache_key)
 
   # Process stone based on the rules
-  result = if stone == 0
+  result = if stone.zero?
              count(1, steps - 1)
            elsif stone.digits.size.even?
              digits = stone.to_s
@@ -34,7 +34,7 @@ def calc_stones(stones, blinks)
 end
 
 # Example Usage
-stones = [773, 79858, 0, 71, 213357, 2937, 1, 3998391] # Input stones
+stones = [773, 79_858, 0, 71, 213_357, 2937, 1, 3_998_391] # Input stones
 blinks = 75 # Number of blinks to calculate
 
 puts "Total stones after #{blinks} blinks: #{calc_stones(stones, blinks)}"

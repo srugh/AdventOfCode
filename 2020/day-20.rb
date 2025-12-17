@@ -1,20 +1,24 @@
+# frozen_string_literal: true
+
 # ---------- parsing ----------
 def parse_tiles(path)
-  File.read(path).split("\n\n").map do |chunk|
+  File.read(path).split("\n\n").to_h do |chunk|
     lines = chunk.lines.map!(&:chomp)
     id = lines.shift[/\d+/].to_i
     [id, lines]
-  end.to_h
+  end
 end
 
 # ---------- grid ops ----------
-def rotate(grid) # 90° CW
+# 90° CW
+def rotate(grid)
   n = grid.size
-  (0...n).map { |c| (n-1).downto(0).map { |r| grid[r][c] }.join }
+  (0...n).map { |c| (n - 1).downto(0).map { |r| grid[r][c] }.join }
 end
 
-def flip_h(grid) # horizontal mirror
-  grid.map { |row| row.reverse }
+# horizontal mirror
+def flip_h(grid)
+  grid.map(&:reverse)
 end
 
 def orientations(grid)
@@ -37,7 +41,7 @@ end
 def assemble(tiles)
   ntiles = tiles.size
   n = Math.sqrt(ntiles).to_i
-  raise "not square" unless n*n == ntiles
+  raise 'not square' unless n * n == ntiles
 
   # Precompute orientations per tile: id -> [{grid:, edges:}]
   variants = {}
@@ -45,33 +49,39 @@ def assemble(tiles)
     variants[id] = orientations(grid).map { |g| { grid: g, edges: edges(g) } }
   end
 
-  placed = Array.new(n) { Array.new(n) }   # each cell: {id:, grid:, edges:}
-  used   = {}                               # id -> true
+  placed = Array.new(n) { Array.new(n) } # each cell: {id:, grid:, edges:}
+  used   = {} # id -> true
 
-  north_ok = ->(r, c, e_top) {
-    return true if r == 0
-    placed[r-1][c][:edges][2] == e_top # neighbor south == my top
+  north_ok = lambda { |r, c, e_top|
+    return true if r.zero?
+
+    placed[r - 1][c][:edges][2] == e_top # neighbor south == my top
   }
-  west_ok = ->(r, c, e_left) {
-    return true if c == 0
-    placed[r][c-1][:edges][1] == e_left # neighbor east == my left
+  west_ok = lambda { |r, c, e_left|
+    return true if c.zero?
+
+    placed[r][c - 1][:edges][1] == e_left # neighbor east == my left
   }
 
   ids = tiles.keys
 
   solve = lambda do |pos|
-    return true if pos == n*n
+    return true if pos == n * n
+
     r = pos / n
     c = pos % n
     ids.each do |id|
       next if used[id]
+
       variants[id].each do |v|
-        top, right, bottom, left = v[:edges]
+        top, _, _, left = v[:edges]
         next unless north_ok.call(r, c, top)
         next unless west_ok.call(r, c, left)
+
         placed[r][c] = { id: id, grid: v[:grid], edges: v[:edges] }
         used[id] = true
         return true if solve.call(pos + 1)
+
         used.delete(id)
         placed[r][c] = nil
       end
@@ -80,7 +90,8 @@ def assemble(tiles)
   end
 
   ok = solve.call(0)
-  raise "no arrangement found" unless ok
+  raise 'no arrangement found' unless ok
+
   placed
 end
 
@@ -93,13 +104,13 @@ end
 def stitch_image(placed)
   n = placed.size
   tile_inner = strip_borders(placed[0][0][:grid])
-  t = tile_inner.size       # inner tile height
-  w = tile_inner.first.size # inner tile width
+  t = tile_inner.size # inner tile height
+  tile_inner.first.size # inner tile width
 
   rows = []
   (0...n).each do |tr|
     (0...t).each do |ir|
-      row = ""
+      row = ''
       (0...n).each do |tc|
         row << strip_borders(placed[tr][tc][:grid])[ir]
       end
@@ -111,14 +122,14 @@ end
 
 # ---------- sea monster detection ----------
 MONSTER = [
-  "                  # ",
-  "#    ##    ##    ###",
-  " #  #  #  #  #  #   "
-]
+  '                  # ',
+  '#    ##    ##    ###',
+  ' #  #  #  #  #  #   '
+].freeze
 MONSTER_OFFSETS = begin
   off = []
   MONSTER.each_with_index do |row, r|
-    row.chars.each_with_index { |ch, c| off << [r,c] if ch == '#' }
+    row.chars.each_with_index { |ch, c| off << [r, c] if ch == '#' }
   end
   off
 end
@@ -134,9 +145,9 @@ def count_monsters(grid)
   h = grid.size
   w = grid.first.size
   count = 0
-  (0..h - MONSTER_H).each do |r|
-    (0..w - MONSTER_W).each do |c|
-      ok = MONSTER_OFFSETS.all? { |dr, dc| grid[r+dr][c+dc] == '#' }
+  (0..(h - MONSTER_H)).each do |r|
+    (0..(w - MONSTER_W)).each do |c|
+      ok = MONSTER_OFFSETS.all? { |dr, dc| grid[r + dr][c + dc] == '#' }
       count += 1 if ok
     end
   end
@@ -147,14 +158,13 @@ def roughness_after_monsters(full_grid)
   total_hash = count_hashes(full_grid)
   orientations(full_grid).each do |g|
     m = count_monsters(g)
-    return total_hash - m * MONSTER_COUNT_HASH if m > 0
+    return total_hash - (m * MONSTER_COUNT_HASH) if m.positive?
   end
-  raise "no monsters found"
+  raise 'no monsters found'
 end
 
-path = "Inputs/day-20.txt"
+path = 'Inputs/day-20.txt'
 tiles = parse_tiles(path)
 placed = assemble(tiles)
-full  = stitch_image(placed)
+full = stitch_image(placed)
 puts roughness_after_monsters(full)
-

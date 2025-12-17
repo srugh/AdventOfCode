@@ -1,4 +1,4 @@
-require 'set'
+# frozen_string_literal: true
 
 # Define a Coordinate class to store X and Y positions
 class Coordinate
@@ -12,13 +12,11 @@ end
 
 # Method to parse a single line of input into a Coordinate object
 def parse_coordinate(line)
-  if line =~ /^(\d+),\s*(\d+)$/
-    x = $1.to_i
-    y = $2.to_i
-    Coordinate.new(x, y)
-  else
-    raise "Invalid coordinate format: #{line}"
-  end
+  raise "Invalid coordinate format: #{line}" unless line =~ /^(\d+),\s*(\d+)$/
+
+  x = Regexp.last_match(1).to_i
+  y = Regexp.last_match(2).to_i
+  Coordinate.new(x, y)
 end
 
 # Read and parse all coordinates from the input file
@@ -57,7 +55,7 @@ def calculate_valid_region_size(coordinates, boundaries, distance_threshold)
       valid_region_size += 1 if total_distance < distance_threshold
     end
     # Optional: Progress indicator for large grids
-    print "." if x % 100 == 0
+    print '.' if (x % 100).zero?
   end
 
   valid_region_size
@@ -65,13 +63,13 @@ end
 
 # Main Execution Flow
 def main
-  input_file = "Inputs/day-06.txt" # Replace with your input file path
+  input_file = 'Inputs/day-06.txt' # Replace with your input file path
   coordinates = read_coordinates(input_file)
   puts "Parsed #{coordinates.size} coordinates."
 
   buffer = 100 # Adjust buffer size based on input specifics
   boundaries = determine_boundaries(coordinates, buffer)
-  puts "Grid boundaries:"
+  puts 'Grid boundaries:'
   puts "X: #{boundaries[:min_x]} to #{boundaries[:max_x]}"
   puts "Y: #{boundaries[:min_y]} to #{boundaries[:max_y]}"
 

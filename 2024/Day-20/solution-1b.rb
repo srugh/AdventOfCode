@@ -1,4 +1,4 @@
-require 'set'
+# frozen_string_literal: true
 
 # =========================
 # Helper Functions
@@ -6,11 +6,7 @@ require 'set'
 
 # Function to parse the input file and create a grid
 def parse_input(input_file)
-  grid = []
-  File.readlines(input_file, chomp: true).each do |line|
-    grid << line.chars
-  end
-  grid
+  File.readlines(input_file, chomp: true).map(&:chars)
 end
 
 # Function to find the start (S) and end (E) positions in the grid
@@ -51,7 +47,7 @@ def bfs_path(grid, start_pos, end_pos)
   queue << start_pos
   visited.add(start_pos)
 
-  while !queue.empty?
+  until queue.empty?
     current = queue.shift
     return reconstruct_path(parent, current) if current == end_pos
 
@@ -94,7 +90,7 @@ def bfs_distance_map(grid, start_pos)
   visited.add(start_pos)
   distance_map[start_pos[0]][start_pos[1]] = 0
 
-  while !queue.empty?
+  until queue.empty?
     current, dist = queue.shift
 
     dirs.each do |dir|
@@ -132,12 +128,12 @@ def generate_cheat_maps(grid, path)
 
       # Option 2: Remove two consecutive walls
       second_wall = [adjacent_pos[0] + dir[0], adjacent_pos[1] + dir[1]]
-      if valid_position?(grid, second_wall) && is_wall?(grid, second_wall)
-        # Check if there's a track after the second wall
-        track_after_second_wall = [second_wall[0] + dir[0], second_wall[1] + dir[1]]
-        if valid_position?(grid, track_after_second_wall) && !is_wall?(grid, track_after_second_wall)
-          removable_walls.add(wall)
-        end
+      next unless valid_position?(grid, second_wall) && is_wall?(grid, second_wall)
+
+      # Check if there's a track after the second wall
+      track_after_second_wall = [second_wall[0] + dir[0], second_wall[1] + dir[1]]
+      if valid_position?(grid, track_after_second_wall) && !is_wall?(grid, track_after_second_wall)
+        removable_walls.add(wall)
       end
     end
   end
@@ -147,11 +143,11 @@ end
 
 # Function to deep copy the grid
 def deep_copy_grid(grid)
-  grid.map { |row| row.dup }
+  grid.map(&:dup)
 end
 
 # Corrected Function to Calculate Valid Cheat Paths Using Minimum Path Reduction
-def calc_cheat_paths_correct(grid, remove_walls, start, final, distance_from_start, distance_from_end)
+def calc_cheat_paths_correct(grid, remove_walls, _start, final, distance_from_start, distance_from_end)
   fast_cheats = 0
   initial_steps = distance_from_start[final[0]][final[1]]
 
@@ -168,22 +164,17 @@ def calc_cheat_paths_correct(grid, remove_walls, start, final, distance_from_sta
       next unless valid_position?(grid, before_wall) && valid_position?(grid, after_wall)
 
       # Check reachability
-      if distance_from_start[before_wall[0]][before_wall[1]] < Float::INFINITY &&
-         distance_from_end[after_wall[0]][after_wall[1]] < Float::INFINITY
+      next unless distance_from_start[before_wall[0]][before_wall[1]] < Float::INFINITY &&
+                  distance_from_end[after_wall[0]][after_wall[1]] < Float::INFINITY
 
-        # New path length if this wall is removed
-        new_path_length = distance_from_start[before_wall[0]][before_wall[1]] + 1 + distance_from_end[after_wall[0]][after_wall[1]]
+      # New path length if this wall is removed
+      new_path_length = distance_from_start[before_wall[0]][before_wall[1]] + 1 + distance_from_end[after_wall[0]][after_wall[1]]
 
-        if new_path_length < min_new_path_length
-          min_new_path_length = new_path_length
-        end
-      end
+      min_new_path_length = new_path_length if new_path_length < min_new_path_length
     end
 
     # After checking all directions for this wall, decide if it's a valid cheat
-    if initial_steps - min_new_path_length >= 100
-      fast_cheats += 1
-    end
+    fast_cheats += 1 if initial_steps - min_new_path_length >= 100
   end
 
   fast_cheats
@@ -199,7 +190,7 @@ def pretty_print_grid(grid, path = [])
   grid.each_with_index do |row, r|
     row.each_with_index do |cell, c|
       if path.include?([r, c])
-        print "X"
+        print 'X'
       else
         print cell
       end
@@ -210,8 +201,7 @@ def pretty_print_grid(grid, path = [])
 end
 
 # Replace with your actual input file path
-input_file = "Inputs/sample.txt"
-input_file = "Inputs/input.txt" # Uncomment this for the actual input
+input_file = 'Inputs/input.txt' # Uncomment this for the actual input
 
 # Parse the input grid
 grid = parse_input(input_file)
@@ -225,7 +215,7 @@ puts "End Position: #{end_pos}"
 initial_path = bfs_path(grid, start_pos, end_pos)
 
 if initial_path.nil?
-  puts "No path found from S to E."
+  puts 'No path found from S to E.'
   exit
 end
 
@@ -244,5 +234,6 @@ distance_from_start = bfs_distance_map(grid, start_pos)
 distance_from_end = bfs_distance_map(grid, end_pos)
 
 # Calculate the number of valid cheat paths using the corrected function
-fast_cheats = calc_cheat_paths_correct(grid, removable_walls, start_pos, end_pos, distance_from_start, distance_from_end)
+fast_cheats = calc_cheat_paths_correct(grid, removable_walls, start_pos, end_pos, distance_from_start,
+                                       distance_from_end)
 puts "Number of valid cheat paths (fast_cheats): #{fast_cheats}"

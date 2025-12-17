@@ -1,4 +1,5 @@
-require 'set'
+# frozen_string_literal: true
+
 def parse_input(path)
   banks = {}
   File.read(path).split.map(&:to_i).each_with_index do |b, i|
@@ -7,17 +8,17 @@ def parse_input(path)
   banks
 end
 
-def solve_part_1(banks)
+def solve_part1(banks)
   snapshot = Set.new
   bank_count = banks.size
 
-  while !snapshot.include?(banks.values.join(","))
-    snapshot.add(banks.values.join(","))
+  until snapshot.include?(banks.values.join(','))
+    snapshot.add(banks.values.join(','))
     key, val = banks.max_by { |key, value| [value, -key] }
     banks[key] = 0
     idx = (key + 1) % bank_count
 
-    while val > 0
+    while val.positive?
       banks[idx] += 1
       val -= 1
       idx = (idx + 1) % bank_count
@@ -27,32 +28,32 @@ def solve_part_1(banks)
   snapshot.size
 end
 
-def solve_part_2(banks)
+def solve_part2(banks)
   snapshot = Set.new
   bank_count = banks.size
-  
-  while !snapshot.include?(banks.values.join(","))
-    snapshot.add(banks.values.join(","))
+
+  until snapshot.include?(banks.values.join(','))
+    snapshot.add(banks.values.join(','))
     key, val = banks.max_by { |key, value| [value, -key] }
     banks[key] = 0
     idx = (key + 1) % bank_count
 
-    while val > 0
+    while val.positive?
       banks[idx] += 1
       val -= 1
       idx = (idx + 1) % bank_count
     end
   end
-  
+
   snapshot = Set.new
   count = 0
-  while !snapshot.include?(banks.values.join(","))
-    snapshot.add(banks.values.join(",")) if snapshot.size == 0
+  until snapshot.include?(banks.values.join(','))
+    snapshot.add(banks.values.join(',')) if snapshot.empty?
     key, val = banks.max_by { |key, value| [value, -key] }
     banks[key] = 0
     idx = (key + 1) % bank_count
 
-    while val > 0
+    while val.positive?
       banks[idx] += 1
       val -= 1
       idx = (idx + 1) % bank_count
@@ -62,7 +63,7 @@ def solve_part_2(banks)
   count
 end
 
-path = "inputs/day-06.txt"
+path = 'inputs/day-06.txt'
 banks = parse_input(path)
-puts "part 1: #{solve_part_1(banks)}"
-puts "part 2: #{solve_part_2(banks)}"
+puts "part 1: #{solve_part1(banks)}"
+puts "part 2: #{solve_part2(banks)}"

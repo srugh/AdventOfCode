@@ -1,35 +1,40 @@
+# frozen_string_literal: true
 
+def parse_input(path)
+  File.read(path).split(',').map(&:to_i)
+end
 
-program = File.read("Inputs/day-02.txt").split(",").map {|i| i.to_i}
-desired = 19690720
-program[1] = 12
-program[2] = 2
-offset = 0
-while program[0] != desired
-  0.upto(99) do |i|
-    break if program[0] == desired
-    0.upto(99) do |j|
-      program = File.read("Inputs/day-02.txt").split(",").map {|i| i.to_i}
-      offset = 0
+def solve_part2(program, desired)
+  99.times do |i|
+    99.times do |j|
       program[1] = i
       program[2] = j
-      while true
-        opcode = program[offset]
-        case opcode
-        when 1
-          program[program[offset+3]] = program[program[offset+1]] + program[program[offset+2]]
-        when 2
-          program[program[offset+3]] = program[program[offset+1]] * program[program[offset+2]]
-        when 99
-          break
-        end
-        offset += 4
-      end
-      puts "i: #{i}, j: #{j}" if program[0] == desired
-      puts 100 * i + j  if program[0] == desired
-      return if program[0] == desired
+      return (100 * i) + j if desired == run(program.dup)
     end
   end
 end
 
+def run(program)
+  offset = 0
+  loop do
+    opcode = program[offset]
+    case opcode
+    when 1
+      op1, op2, store = program[offset + 1, 3]
+      offset += 4
+      program[store] = program[op1] + program[op2]
+    when 2
+      op1, op2, store = program[offset + 1, 3]
+      offset += 4
+      program[store] = program[op1] * program[op2]
+    when 99
+      break
+    end
+  end
+  program[0]
+end
 
+path = 'Inputs/day-02.txt'
+program = parse_input(path)
+desired = 19_690_720
+puts "part 2: #{solve_part2(program, desired)}"

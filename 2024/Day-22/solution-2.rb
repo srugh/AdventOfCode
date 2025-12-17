@@ -1,16 +1,13 @@
+# frozen_string_literal: true
+
 # =========================
 # Ruby Solution for Both Parts
 # =========================
 
-require 'set'
-
-
 def parse_inputs(input_file)
-    secrets = []
-    File.readlines(input_file). each do |line|
-        secrets.push(line.chomp.to_i)
-    end
-    secrets
+  File.readlines(input_file).map do |line|
+    line.chomp.to_i
+  end
 end
 
 # =========================
@@ -25,28 +22,28 @@ def simulate_secret_numbers(initial_secret, iterations = 2000)
     step1 = secret * 64
 
     # Step 2: Mix (XOR with step1)
-    secret = secret ^ step1
+    secret ^= step1
 
     # Step 3: Prune
-    secret = secret % 16777216
+    secret %= 16_777_216
 
     # Step 4: Divide by 32, round down
     step4 = (secret / 32).floor
 
     # Step 5: Mix (XOR with step4)
-    secret = secret ^ step4
+    secret ^= step4
 
     # Step 6: Prune
-    secret = secret % 16777216
+    secret %= 16_777_216
 
     # Step 7: Multiply by 2048
     step7 = secret * 2048
 
     # Step 8: Mix (XOR with step7)
-    secret = secret ^ step7
+    secret ^= step7
 
     # Step 9: Prune
-    secret = secret % 16777216
+    secret %= 16_777_216
   end
   secret
 end
@@ -68,11 +65,9 @@ end
 
 # Function to compute price changes
 def compute_price_changes(prices)
-  changes = []
-  (1...prices.size).each do |i|
-    changes << (prices[i] - prices[i - 1])
+  (1...prices.size).map do |i|
+    (prices[i] - prices[i - 1])
   end
-  changes
 end
 
 # Function to find the optimal four-change sequence
@@ -83,14 +78,14 @@ def find_optimal_sequence(buyers_changes, buyers_prices)
   buyers_changes.each_with_index do |changes, idx|
     prices = buyers_prices[idx]
     # Slide a window of four changes
-    (0..changes.size - 4).each do |i|
+    (0..(changes.size - 4)).each do |i|
       sequence = changes[i, 4].join(',') # Use a string as a key
       # Record only the first occurrence per buyer
-      unless sequence_to_selling_prices[sequence].any? { |entry| entry[:buyer_idx] == idx }
-        # The price at the point of selling is the price after the fourth change
-        selling_price = prices[i + 4]
-        sequence_to_selling_prices[sequence] << { buyer_idx: idx, price: selling_price }
-      end
+      next if sequence_to_selling_prices[sequence].any? { |entry| entry[:buyer_idx] == idx }
+
+      # The price at the point of selling is the price after the fourth change
+      selling_price = prices[i + 4]
+      sequence_to_selling_prices[sequence] << { buyer_idx: idx, price: selling_price }
     end
   end
 
@@ -113,7 +108,7 @@ end
 
 # Example Input: List of initial secret numbers
 # Replace this list with your actual input
-initial_secrets = parse_inputs("Inputs/input.txt")
+initial_secrets = parse_inputs('Inputs/input.txt')
 
 # -------------------------
 # Part 1: Sum of 2000th Secret Numbers
@@ -144,18 +139,18 @@ def part2_optimal_sequence(initial_secrets)
     2000.times do
       # Step 1: Multiply by 64, mix, prune
       step1 = secret * 64
-      secret = secret ^ step1
-      secret %= 16777216
+      secret ^= step1
+      secret %= 16_777_216
 
       # Step 2: Divide by 32, floor, mix, prune
       step4 = (secret / 32).floor
-      secret = secret ^ step4
-      secret %= 16777216
+      secret ^= step4
+      secret %= 16_777_216
 
       # Step 3: Multiply by 2048, mix, prune
       step7 = secret * 2048
-      secret = secret ^ step7
-      secret %= 16777216
+      secret ^= step7
+      secret %= 16_777_216
 
       secrets << secret
     end
@@ -173,14 +168,14 @@ def part2_optimal_sequence(initial_secrets)
   result = find_optimal_sequence(buyers_changes, buyers_prices)
 
   if result[:sequence].nil?
-    puts "No valid sequence found."
-    return 0
+    puts 'No valid sequence found.'
+    0
   else
     # Convert sequence string back to array of integers
     sequence_array = result[:sequence].split(',').map(&:to_i)
     puts "Optimal Sequence of Four Changes: #{sequence_array.join(',')}"
     puts "Total Bananas Earned: #{result[:total_sum]}"
-    return result[:total_sum]
+    result[:total_sum]
   end
 end
 
@@ -189,12 +184,12 @@ end
 # -------------------------
 
 # Part 1 Execution
-puts "----- Part 1: Sum of 2000th Secret Numbers -----"
+puts '----- Part 1: Sum of 2000th Secret Numbers -----'
 sum_part1 = part1_sum_2000th_secret(initial_secrets)
 puts "Sum of 2000th Secret Numbers: #{sum_part1}"
 puts
 
 # Part 2 Execution
-puts "----- Part 2: Optimal Four-Change Sequence -----"
+puts '----- Part 2: Optimal Four-Change Sequence -----'
 sum_part2 = part2_optimal_sequence(initial_secrets)
 puts "Total Bananas Earned: #{sum_part2}"

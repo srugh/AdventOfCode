@@ -1,15 +1,15 @@
-require 'set'
+# frozen_string_literal: true
+
 def parse_input(path)
-  happiness = Hash.new  { |hash, key| hash[key] = {} }
+  happiness = Hash.new { |hash, key| hash[key] = {} }
   File.readlines(path, chomp: true).each do |line|
-    line.delete_suffix!(".")
+    line.delete_suffix!('.')
     temp = line.split
-    val = temp[2] == "gain" ? temp[3].to_i : ("-" + temp[3]).to_i
+    val = temp[2] == 'gain' ? temp[3].to_i : "-#{temp[3]}".to_i
     happiness[temp[0]][temp.last] = val
   end
   p happiness
   happiness
-  
 end
 
 def total_happiness(order, happiness)
@@ -27,17 +27,16 @@ def total_happiness(order, happiness)
   sum
 end
 
-
 def add_me(happiness)
-  me = "Me"
+  me = 'Me'
   # outer hash already has the default { |h, k| h[k] = {} }, so this works:
-  happiness.keys.each do |person|
+  happiness.each_key do |person|
     happiness[me][person] = 0
     happiness[person][me] = 0
   end
 end
 
-def solve_part_1(happiness)
+def solve_part1(happiness)
   people = happiness.keys
   first  = people.first
   rest   = people[1..]
@@ -53,11 +52,9 @@ def solve_part_1(happiness)
   best
 end
 
-
-
-path = "Inputs/day-13.txt"
+path = 'Inputs/day-13.txt'
 input = parse_input(path)
 add_me(input)
-part_1 = solve_part_1(input)
+part_1 = solve_part1(input)
 
 puts "part_1: #{part_1}"

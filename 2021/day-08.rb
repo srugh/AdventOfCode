@@ -1,13 +1,13 @@
-require "set"
+# frozen_string_literal: true
 
 def parse_input(path)
   lines = File.readlines(path, chomp: true)
   entries = []
 
   lines.each do |line|
-    left, right = line.split(" | ")
-    patterns = left.split(" ")
-    outputs  = right.split(" ")
+    left, right = line.split(' | ')
+    patterns = left.split
+    outputs  = right.split
     entries << [patterns, outputs]
   end
 
@@ -108,8 +108,7 @@ def decode_entry(pattern_strings, output_strings)
   end
 
   # Turn [d1, d2, d3, d4] into an integer
-  value = digits[0] * 1000 + digits[1] * 100 + digits[2] * 10 + digits[3]
-  value
+  (digits[0] * 1000) + (digits[1] * 100) + (digits[2] * 10) + digits[3]
 end
 
 def part1(entries)
@@ -140,7 +139,7 @@ end
 # Usage
 # -----------------------------
 
-path    = "Inputs/day-08.txt"
+path    = 'Inputs/day-08.txt'
 entries = parse_input(path)
 
 puts "part 1: #{part1(entries)}"

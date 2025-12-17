@@ -1,19 +1,21 @@
-def read_data(input_file) 
-    answers = []
-    equations = []
-  
-    File.foreach(input_file) do |line|
-        # Split the line on the colon and capture the first part and the rest
-        first, rest = line.chomp.split(": ", 2)
-        answers << first.to_i
-        equations << rest.split(" ").map(&:to_i) if rest
-    end
-  
-    [answers, equations]
+# frozen_string_literal: true
+
+def read_data(input_file)
+  answers = []
+  equations = []
+
+  File.foreach(input_file) do |line|
+    # Split the line on the colon and capture the first part and the rest
+    first, rest = line.chomp.split(': ', 2)
+    answers << first.to_i
+    equations << rest.split.map(&:to_i) if rest
+  end
+
+  [answers, equations]
 end
 
 def check_equation(answer, equation)
-  operators = ["*", "+", "||"]
+  operators = ['*', '+', '||']
   num_slots = equation.size - 1
 
   # Generate combinations for the slots
@@ -23,7 +25,7 @@ def check_equation(answer, equation)
     new_combinations = []
     slots_combinations.each do |combination|
       operators.each do |operator|
-        new_combinations << combination + [operator]
+        new_combinations << (combination + [operator])
       end
     end
     slots_combinations = new_combinations
@@ -37,10 +39,7 @@ def check_equation(answer, equation)
       result << char
       result << slots[index] if index < slots.size
     end
-    if calc_equation?(result, answer)
-      
-      return [true, answer]
-    end 
+    return [true, answer] if calc_equation?(result, answer)
   end
 
   [false, nil]
@@ -50,15 +49,16 @@ def calc_equation?(eq, answer)
   val1 = eq[0].to_i
   total = 0
 
-  for i in 1..eq.size-1
+  (1..(eq.size - 1)).each do |i|
     op = eq[i]
-    i=i+1
+    i += 1
     val2 = eq[i].to_i
-    if op == "*"
+    case op
+    when '*'
       total = val1 * val2
-    elsif op == "+"
+    when '+'
       total = val1 + val2
-    elsif op == "||"
+    when '||'
       str = val1.to_s + val2.to_s
       total = str.to_i
     end
@@ -70,20 +70,17 @@ def calc_equation?(eq, answer)
 end
 
 def calc_total_possible_equations(answers, equations)
-    good_totals = []
-    for i in 0..answers.size-1
-        works, total = check_equation(answers[i], equations[i])
-        if works
-            good_totals << total
-        end
-    end
+  good_totals = []
+  (0..(answers.size - 1)).each do |i|
+    works, total = check_equation(answers[i], equations[i])
+    good_totals << total if works
+  end
 
-    good_totals.sum
+  good_totals.sum
 end
 
-
-#input_file = "Inputs/sample.txt"
-input_file = "Inputs/input1.txt"
+# input_file = "Inputs/sample.txt"
+input_file = 'Inputs/input1.txt'
 
 answers, equations = read_data(input_file)
 
